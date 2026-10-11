@@ -43,18 +43,18 @@ You will install the plugin in Rhino 8, confirm the local MCP server is running,
   </Step>
 
   <Step title="Connect your AI assistant">
-    Point the client at `http://127.0.0.1:4010/mcp` (or `http://localhost:4010/mcp`).
+    Point the client at `http://127.0.0.1:4010/mcp`.
 
     <Tabs>
       <Tab title="Claude Desktop">
-        Merge this into your Claude Desktop MCP config, then restart Claude:
+        Edit `claude_desktop_config.json` (macOS: `~/Library/Application Support/Claude/`; Windows: `%APPDATA%\Claude\`), merge this, then fully restart Claude:
 
         ```json
         {
           "mcpServers": {
             "mcp4rhino": {
               "command": "npx",
-              "args": ["mcp-remote", "http://localhost:4010/mcp"]
+              "args": ["mcp-remote", "http://127.0.0.1:4010/mcp"]
             }
           }
         }
@@ -63,13 +63,13 @@ You will install the plugin in Rhino 8, confirm the local MCP server is running,
         Details: [How to connect Claude Desktop](/howto/connect-claude).
       </Tab>
       <Tab title="Cursor">
-        Add an MCP server that runs:
+        In **Cursor Settings → MCP**, or in `.cursor/mcp.json`, add a server that runs:
 
         ```text
         npx mcp-remote http://127.0.0.1:4010/mcp
         ```
 
-        Enable `mcp4rhino` in Cursor MCP settings, then reload MCP or restart Cursor.
+        Enable `mcp4rhino`, then reload MCP or restart Cursor.
 
         Details: [How to connect Cursor](/howto/connect-cursor).
       </Tab>
