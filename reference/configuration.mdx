@@ -13,7 +13,7 @@ MCP4Rhino listens for JSON-RPC MCP requests over HTTP on the local machine.
 | Port | **4010** |
 | Bind | Loopback (local only) |
 
-Clients typically use `npx mcp-remote http://127.0.0.1:4010/mcp` (or `localhost`). Native HTTP MCP to the same URL works when the client supports it.
+Clients typically use `npx mcp-remote http://127.0.0.1:4010/mcp`. Native HTTP MCP to the same URL works when the client supports it.
 
 Open `http://127.0.0.1:4010/` in a browser for a plain OK response when the server is up.
 
@@ -23,7 +23,6 @@ Open `http://127.0.0.1:4010/` in a browser for a plain OK response when the serv
 |----------|--------|
 | `MCP4RHINO_PORT` | Listen port. Default **4010** if unset or invalid. Update the AI client URL when you change this. |
 | `MCP4RHINO_AUTOSTART` | Set to `0`, `false`, or `no` to disable Idle auto-start. You must run `MCP4Rhino` (or Start in Status) yourself. |
-| `MCP4RHINO_TOOLS_PATH` | Override directory containing `MCP4Rhino.Tools.dll` (developers / advanced installs). |
 
 Set these in the environment that launches Rhino (shell profile, launch agent, or system env on Windows).
 
@@ -37,8 +36,6 @@ On plugin load, MCP4Rhino schedules an Idle auto-start unless `MCP4RHINO_AUTOSTA
 |----|------|
 | macOS | `~/Library/Logs/MCP4Rhino/mcp4rhino.log` |
 | Windows | `%LOCALAPPDATA%\MCP4Rhino\mcp4rhino.log` |
-
-Default viewport capture PNG directories use the same log/appdata roots (platform-specific). See `capture_viewport` in [MCP tools](/reference/mcp-tools).
 
 ## Related
 

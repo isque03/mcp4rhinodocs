@@ -3,11 +3,9 @@ title: "MCP tools"
 description: "Inventory of MCP4Rhino tools exposed at http://127.0.0.1:4010/mcp."
 ---
 
-Complete inventory for agents and developers. Default endpoint: `http://127.0.0.1:4010/mcp`.
+Tools your AI assistant can call at `http://127.0.0.1:4010/mcp`.
 
-**Document units:** length coordinates on create/transform tools are in the **current document unit system**. If the user says “32 inches” and the file is in Feet, call `convert_length` first, then create, then verify with `measure_size` or `measure_distance`.
-
-`initialize` returns MCP `instructions` pointing agents at [GitHub Issues](https://github.com/isque03/mcp4rhino/issues) and `get_support_info` before filing bugs or enhancements.
+**Document units:** create and transform tools use the **current document unit system**. If you say “32 inches” and the file is in Feet, the assistant should convert first, then create, then measure to verify.
 
 ## Core document and view
 
@@ -28,8 +26,7 @@ Complete inventory for agents and developers. Default endpoint: `http://127.0.0.
 | `set_view` / `orbit_view` / `pan_view` / `zoom_view` / `zoom_extents` | Camera |
 | `capture_viewport` | PNG screenshot (+ MCP image when ≤ 1 MiB) |
 | `run_rhino_command` | Scripted Rhino command escape hatch |
-| `get_support_info` | Version, endpoint, log path, GitHub Issues URLs, filing tips |
-| `mcp4rhino_reload` | Hot-reload Tools and Logic |
+| `get_support_info` | Version, endpoint, log path, and GitHub Issues links |
 
 ### `capture_viewport` notes
 
@@ -51,7 +48,7 @@ Complete inventory for agents and developers. Default endpoint: `http://127.0.0.
 
 Surface face pick for fillet/chamfer: `face_index_*` or `pick_point_*`. Edge pick for blend/`dup_edge`: `edge_index` or `pick_point` from `list_surface_edges`.
 
-## Architecture
+## Building elements
 
 `set_project_info`, `get_project_info`, `create_level`, `list_levels`, `set_active_level`, `create_grid`, `create_site`, `create_building`, `create_wall`, `create_slab`, `create_roof`, `create_column`, `create_beam`, `create_door`, `create_window`, `create_stair`, `create_ramp`, `create_railing`, `create_curtain_wall`, `create_space`, `update_space`, `list_spaces`, `apply_opening`, element types, `get_building_model`, `query_elements`, `measure_distance`, `measure_area`, `measure_clear_width`.
 

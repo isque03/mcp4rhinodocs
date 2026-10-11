@@ -3,7 +3,7 @@ title: "Rhino commands and menu"
 description: "MCP4Rhino command-line names, Status dialog, and menu locations on Windows and macOS."
 ---
 
-MCP4Rhino registers Rhino commands and a toolbar/menu from `MCP4Rhino.rui` next to the plugin `.rhp`.
+MCP4Rhino adds Rhino commands and a **MCP4Rhino** menu.
 
 ## Menu location
 
@@ -12,7 +12,7 @@ MCP4Rhino registers Rhino commands and a toolbar/menu from `MCP4Rhino.rui` next 
 | Windows | Under the **Tools** menu |
 | macOS | Top-level **MCP4Rhino** menu in the menu bar (not under Tools) |
 
-Typical menu items: **Status…**, **Check for updates…**, **Report issue…**, and related entries wired to the commands below.
+Typical menu items: **Status…**, **Check for updates…**, **Report issue…**.
 
 ## Commands
 
@@ -20,11 +20,10 @@ Typical menu items: **Status…**, **Check for updates…**, **Report issue…**
 |---------|----------------|
 | `MCP4Rhino` | Start the MCP HTTP server (also used if auto-start was skipped) |
 | `MCP4RhinoStop` | Stop the server |
-| `MCP4RhinoStatus` | Command-line summary; opens the Status dialog when run interactively (not scripted) |
-| `MCP4RhinoStatusUI` | Always opens the Status dialog (used by menu **Status…**; RUI macros are scripted) |
+| `MCP4RhinoStatus` | Command-line summary; opens the Status dialog when run interactively |
+| `MCP4RhinoStatusUI` | Always opens the Status dialog (used by menu **Status…**) |
 | `MCP4RhinoUpdates` | Open Rhino Package Manager |
 | `MCP4RhinoReportIssue` | Open GitHub Issues in the browser |
-| `MCP4RhinoReload` | Hot-reload `MCP4Rhino.Tools.dll` and Logic |
 
 Type these in the Rhino **command line**, not Help search.
 

@@ -14,7 +14,10 @@
       {
         "group": "Get started",
         "icon": "rocket",
-        "pages": ["index", "quickstart"]
+        "pages": [
+          "index",
+          "quickstart"
+        ]
       },
       {
         "group": "How to",
@@ -23,9 +26,7 @@
           "howto/connect-claude",
           "howto/connect-cursor",
           "howto/troubleshoot",
-          "howto/report-issues",
-          "howto/install-from-source",
-          "howto/hot-reload"
+          "howto/report-issues"
         ]
       },
       {
@@ -36,11 +37,6 @@
           "reference/configuration",
           "reference/mcp-tools"
         ]
-      },
-      {
-        "group": "Explanation",
-        "icon": "lightbulb",
-        "pages": ["explanation/architecture"]
       }
     ]
   },

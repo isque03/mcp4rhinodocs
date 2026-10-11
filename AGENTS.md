@@ -10,7 +10,7 @@
 
 ## Terminology
 
-- **MCP4Rhino** — the Rhino plugin and product name (not "MCP for Rhino" as a title)
+- **MCP4Rhino** — the Rhino plugin and product name
 - **MCP** — Model Context Protocol
 - **Status** — the MCP4Rhino Status dialog (`MCP4RhinoStatus` / `MCP4RhinoStatusUI`)
 - Default endpoint: `http://127.0.0.1:4010/mcp` (port **4010**)
@@ -30,4 +30,4 @@
 ## Content boundaries
 
 - In scope: install (Package Manager / release `.yak`), connect Claude/Cursor, Status, troubleshoot, report issues, commands/config/tools reference
-- Out of scope on this site: hot-reload, install-from-source, host/Tools/Logic architecture, CI/publish runbooks — those stay in the product repo
+- Out of scope: hot-reload, install-from-source, host/Tools/Logic internals, CI/publish runbooks, legal/compliance disclaimers on the landing page — keep contributor material in the product repo

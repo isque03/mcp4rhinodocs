@@ -8,8 +8,6 @@ End-user Mintlify documentation for [MCP4Rhino](https://github.com/isque03/mcp4r
 npx mintlify dev
 ```
 
-Open the URL Mintlify prints (usually `http://localhost:3000`).
-
 ## Deploy
 
 Push to `main`. Mintlify auto-deploys when this GitHub repo is connected in the Mintlify dashboard.
@@ -19,7 +17,7 @@ Push to `main`. Mintlify auto-deploys when this GitHub repo is connected in the 
 | Path | Quadrant |
 |------|----------|
 | `index.mdx`, `quickstart.mdx` | Intro + tutorial |
-| `howto/*` | Task guides (connect, troubleshoot, report issues) |
+| `howto/*` | Connect, troubleshoot, report issues |
 | `reference/*` | Commands, config, MCP tools |
 
 Contributor playbooks stay in the product repo, not this site.
