@@ -1,7 +1,7 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "Mintlify Starter Kit",
+  "name": "MCP4Rhino",
   "colors": {
     "primary": "#16A34A",
     "light": "#07C983",
@@ -9,29 +9,37 @@
   },
   "favicon": "/favicon.svg",
   "navigation": {
-    "pages": [
+    "groups": [
       {
-        "group": "Getting Started",
+        "group": "Getting started",
         "pages": [
           "index",
           "quickstart"
         ]
+      },
+      {
+        "group": "How-to guides",
+        "pages": [
+          "guides/connect-claude-cursor",
+          "guides/troubleshoot",
+          "guides/install-from-source"
+        ]
+      },
+      {
+        "group": "Reference",
+        "pages": [
+          "reference/commands",
+          "reference/configuration",
+          "reference/mcp-tools"
+        ]
+      },
+      {
+        "group": "Explanation",
+        "pages": [
+          "explanation/architecture"
+        ]
       }
-    ],
-    "global": {
-      "anchors": [
-        {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
-        },
-        {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
-        }
-      ]
-    }
+    ]
   },
   "logo": {
     "light": "/logo/light.svg",
@@ -40,14 +48,18 @@
   "navbar": {
     "links": [
       {
-        "label": "Support",
-        "href": "mailto:support@mintlify.com"
+        "label": "GitHub",
+        "href": "https://github.com/isque03/mcp4rhino"
+      },
+      {
+        "label": "Issues",
+        "href": "https://github.com/isque03/mcp4rhino/issues"
       }
     ],
     "primary": {
       "type": "button",
-      "label": "Dashboard",
-      "href": "https://app.mintlify.com"
+      "label": "Releases",
+      "href": "https://github.com/isque03/mcp4rhino/releases"
     }
   },
   "contextual": {
@@ -64,9 +76,7 @@
   },
   "footer": {
     "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
+      "github": "https://github.com/isque03/mcp4rhino"
     }
   }
 }

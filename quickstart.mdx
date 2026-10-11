@@ -1,47 +1,92 @@
 ---
 title: "Quickstart"
-description: "Begin with a guide on the fastest path to a successful outcome"
+description: "Install MCP4Rhino, connect an AI assistant, and run your first Rhino request"
 ---
 
-Describe how someone begins using your product. What is the first thing they need to do? Are there any prerequisites?
+You will install MCP4Rhino in Rhino 8, confirm the local MCP server is running, connect Claude or Cursor, and ask a question about your open document.
 
-A quickstart should take someone from zero to using your product. They'll get a quick win and a sense of what they can accomplish.
+## What you'll need
 
-## Prerequisites
+- Rhino 8 (Windows or macOS)
+- [Node.js](https://nodejs.org/) (`npx`) for the usual AI client bridge
+- Claude Desktop, Cursor, or another MCP client
 
-Before you begin, you must have:
+## Step 1: Install in Rhino
 
-- Requirement one (for example, Node.js 18+, a free account, an API key)
-- Requirement two (for example, a compatible device, a compatible browser, a compatible operating system)
+<Tabs>
+  <Tab title="Package Manager">
+    <Steps>
+      <Step title="Open Package Manager">
+        In Rhino, type `PackageManager` in the **command line** and press Enter.
+      </Step>
+      <Step title="Install MCP4Rhino">
+        Search for **MCP4Rhino**, select the package by **Agent Toolkit**, click **Install**, and apply changes.
+      </Step>
+      <Step title="Restart Rhino">
+        Quit and reopen Rhino when prompted. After restart, MCP4Rhino usually auto-starts on Idle.
+      </Step>
+    </Steps>
 
-## Get started
-
-<Steps>
-  <Step title="Install">
-    Describe how to install your product or sign up.
-
-    ```bash
-    npm install your-package
-    ```
-  </Step>
-  <Step title="Configure">
-    Describe any setup or configuration needed before first use.
-
-    ```bash
-    your-cli init
-    ```
-  </Step>
-  <Step title="Run it">
-    Show the first thing a user does to see it working.
+    ![MCP4Rhino in Rhino Package Manager](/images/package-manager-mcp4rhino.png)
+  </Tab>
+  <Tab title="GitHub .yak">
+    Download the universal `MCP4Rhino-<version>.yak` from the [latest release](https://github.com/isque03/mcp4rhino/releases).
 
     ```bash
-    your-cli start
+    # macOS
+    "/Applications/Rhino 8.app/Contents/Resources/bin/yak" install path/to/MCP4Rhino-<version>.yak
     ```
-  </Step>
-</Steps>
+
+    ```powershell
+    # Windows
+    & "C:\Program Files\Rhino 8\System\Yak.exe" install path\to\MCP4Rhino-<version>.yak
+    ```
+
+    Restart Rhino after install.
+  </Tab>
+</Tabs>
+
+## Step 2: Confirm the server is running
+
+Open the Status dialog:
+
+- **Windows:** **Tools → MCP4Rhino → Status…**
+- **macOS:** top-level **MCP4Rhino → Status…** (not under Tools)
+
+Or type `MCP4RhinoStatus` / `MCP4RhinoStatusUI` in the Rhino command line.
+
+You want **Running** and endpoint `http://127.0.0.1:4010/mcp`. If Stopped, use **Start server** or type `MCP4Rhino`.
 
 <Tip>
-  Give people a way to get help. This could be a link to a support page, a chat with a customer support agent, or a forum for your product.
-
-  Example: Need help? Reach out to us at [support@yourcompany.com](mailto:support@yourcompany.com).
+  On macOS the menu is a top-level **MCP4Rhino** item in the menu bar. Looking only under **Tools** is a common miss.
 </Tip>
+
+## Step 3: Connect your AI assistant
+
+Add an MCP server that runs:
+
+```text
+npx mcp-remote http://127.0.0.1:4010/mcp
+```
+
+Full Claude Desktop and Cursor steps: [How to connect Claude or Cursor](/guides/connect-claude-cursor).
+
+Restart or reload MCP in the client after saving config.
+
+## Step 4: Try your first request
+
+With Rhino open, a document active, MCP4Rhino running, and the client connected, ask:
+
+> What objects are currently in my Rhino document?
+
+You should get a summary from the active document. Then try a small create or measure request and watch Rhino update.
+
+## What you built
+
+You now have:
+
+- MCP4Rhino installed and listening on port **4010**
+- An AI client bridged to `http://127.0.0.1:4010/mcp`
+- A verified path from natural language → Rhino tools
+
+Next: [MCP tools reference](/reference/mcp-tools) · [Troubleshooting](/guides/troubleshoot)

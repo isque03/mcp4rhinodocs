@@ -1,0 +1,47 @@
+---
+title: "Configuration"
+description: "Environment variables, default port, logs, and MCP endpoint"
+---
+
+MCP4Rhino listens on loopback by default. Override port and autostart with environment variables before launching Rhino.
+
+## Endpoint
+
+| Item | Value |
+|------|-------|
+| Default URL | `http://127.0.0.1:4010/mcp` |
+| Health check | `http://127.0.0.1:4010/` (plain OK when up) |
+| Transport | Local HTTP JSON-RPC (MCP) |
+
+Clients typically use:
+
+```text
+npx mcp-remote http://127.0.0.1:4010/mcp
+```
+
+## Environment variables
+
+| Variable | Default | Effect |
+|----------|---------|--------|
+| `MCP4RHINO_PORT` | `4010` | Listen port. Invalid/unset → 4010. Update the client URL if you change this. |
+| `MCP4RHINO_AUTOSTART` | on | Set to `0`, `false`, or `no` to disable Idle auto-start. Then run `MCP4Rhino` manually. |
+| `MCP4RHINO_TOOLS_PATH` | (package dir) | Override directory containing `MCP4Rhino.Tools.dll` (development) |
+
+Set these in the environment that launches Rhino (shell, launch agent, or system env), then start Rhino.
+
+## Logs
+
+| OS | Path |
+|----|------|
+| macOS | `~/Library/Logs/MCP4Rhino/mcp4rhino.log` |
+| Windows | `%LOCALAPPDATA%\MCP4Rhino\mcp4rhino.log` |
+
+Default viewport capture PNGs use the same log directory on macOS, and `%LOCALAPPDATA%\MCP4Rhino\` on Windows (or a `path` argument).
+
+## Document units (agent rule)
+
+Length arguments on create/transform tools are in the **current document unit system**. If the user says “32 inches” and the file is in Feet, call `convert_length` first, then create, then verify with `measure_size` or `measure_distance`.
+
+## Related
+
+[Commands](/reference/commands) · [Troubleshooting](/guides/troubleshoot) · [Architecture](/explanation/architecture)
