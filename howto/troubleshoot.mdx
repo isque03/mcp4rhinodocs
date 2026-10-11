@@ -1,0 +1,57 @@
+---
+title: "How to troubleshoot"
+description: "Diagnose MCP4Rhino when the assistant cannot connect or tools misbehave."
+---
+
+You will identify whether the problem is the Rhino server, the AI client bridge, or a specific tool.
+
+## Prerequisites
+
+- Rhino 8 installed
+- Access to the Rhino command line and the MCP4Rhino menu
+
+## Steps
+
+1. **Open Status.** Use **MCP4Rhino → Status…** (Windows: under **Tools**; macOS: top-level **MCP4Rhino**) or run `MCP4RhinoStatus`.
+
+2. **If Stopped**, click **Start server** or run `MCP4Rhino`. Wait until Status shows Running on port **4010** (or your custom port).
+
+3. **Probe the HTTP listener** from a terminal:
+
+   ```bash
+   curl -sS -X POST http://127.0.0.1:4010/mcp \
+     -H 'Content-Type: application/json' \
+     -d '{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}'
+   ```
+
+   Or open `http://127.0.0.1:4010/` in a browser for a plain OK when the server is up.
+
+4. **Restart the AI client** after any MCP config change. Confirm Node.js/`npx` works for `mcp-remote`.
+
+5. **Check logs** if tools fail after connect:
+
+   | OS | Log path |
+   |----|----------|
+   | macOS | `~/Library/Logs/MCP4Rhino/mcp4rhino.log` |
+   | Windows | `%LOCALAPPDATA%\MCP4Rhino\mcp4rhino.log` |
+
+## Common fixes
+
+| Symptom | Fix |
+|---------|-----|
+| Nothing listens on 4010 | Rhino open? Autostart off (`MCP4RHINO_AUTOSTART=0`)? Start with `MCP4Rhino`. |
+| Port bind error | Another process owns the port. Set `MCP4RHINO_PORT` and update the client URL. |
+| Commands not found | Reinstall via Package Manager or `.yak`, restart Rhino. |
+| Claude / Cursor cannot connect | Match URL to Status. Restart client. Confirm `npx`. |
+| AI on Linux, Rhino on Windows | Use the Windows host IP in the client URL. |
+| Object huge vs named size | Document units differ from spoken units. Ask the assistant to check units and convert before creating. |
+| `export_3dm` license error | Rhino must allow save (valid license or active evaluation). |
+
+## Verification
+
+`tools/list` returns a JSON tool array, and Status shows Running. Your assistant can call `get_document_info`.
+
+## Related
+
+- [Configuration reference](/reference/configuration)
+- [How to report issues](/howto/report-issues)

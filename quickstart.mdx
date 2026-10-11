@@ -1,36 +1,23 @@
 ---
 title: "Quickstart"
-description: "Install MCP4Rhino, connect an AI assistant, and run your first Rhino request"
+description: "Install MCP4Rhino, connect an AI assistant, and run your first Rhino prompt."
 ---
 
-You will install MCP4Rhino in Rhino 8, confirm the local MCP server is running, connect Claude or Cursor, and ask a question about your open document.
+You will install the plugin in Rhino 8, confirm the local MCP server is running, connect Claude or Cursor, and ask a question about the open document.
 
-## What you'll need
+## Prerequisites
 
-- Rhino 8 (Windows or macOS)
-- [Node.js](https://nodejs.org/) (`npx`) for the usual AI client bridge
-- Claude Desktop, Cursor, or another MCP client
+- **Rhino 8** on Windows or macOS
+- An MCP-compatible AI assistant (Claude Desktop or Cursor)
+- [Node.js](https://nodejs.org/) (`npx`) for the usual `mcp-remote` bridge
 
-## Step 1: Install in Rhino
+## Get started
 
-<Tabs>
-  <Tab title="Package Manager">
-    <Steps>
-      <Step title="Open Package Manager">
-        In Rhino, type `PackageManager` in the **command line** and press Enter.
-      </Step>
-      <Step title="Install MCP4Rhino">
-        Search for **MCP4Rhino**, select the package by **Agent Toolkit**, click **Install**, and apply changes.
-      </Step>
-      <Step title="Restart Rhino">
-        Quit and reopen Rhino when prompted. After restart, MCP4Rhino usually auto-starts on Idle.
-      </Step>
-    </Steps>
+<Steps>
+  <Step title="Install MCP4Rhino">
+    In Rhino, type `PackageManager`, search **MCP4Rhino**, install the package by **Agent Toolkit**, apply changes, and restart Rhino when prompted.
 
-    ![MCP4Rhino in Rhino Package Manager](/images/package-manager-mcp4rhino.png)
-  </Tab>
-  <Tab title="GitHub .yak">
-    Download the universal `MCP4Rhino-<version>.yak` from the [latest release](https://github.com/isque03/mcp4rhino/releases).
+    Or download a universal `.yak` from [GitHub Releases](https://github.com/isque03/mcp4rhino/releases) and install it with Yak, then restart Rhino:
 
     ```bash
     # macOS
@@ -41,52 +28,68 @@ You will install MCP4Rhino in Rhino 8, confirm the local MCP server is running, 
     # Windows
     & "C:\Program Files\Rhino 8\System\Yak.exe" install path\to\MCP4Rhino-<version>.yak
     ```
+  </Step>
 
-    Restart Rhino after install.
-  </Tab>
-</Tabs>
+  <Step title="Confirm the server is running">
+    After restart, MCP4Rhino usually auto-starts on Idle.
 
-## Step 2: Confirm the server is running
+    Open **MCP4Rhino → Status…**:
+    - **Windows:** under the **Tools** menu
+    - **macOS:** top-level **MCP4Rhino** menu (not under Tools)
 
-Open the Status dialog:
+    Or type `MCP4RhinoStatus` in the Rhino command line. Status should show **Running** on port **4010**.
 
-- **Windows:** **Tools → MCP4Rhino → Status…**
-- **macOS:** top-level **MCP4Rhino → Status…** (not under Tools)
+    If it is Stopped, click **Start server** or run `MCP4Rhino`.
+  </Step>
 
-Or type `MCP4RhinoStatus` / `MCP4RhinoStatusUI` in the Rhino command line.
+  <Step title="Connect your AI assistant">
+    Point the client at `http://127.0.0.1:4010/mcp` (or `http://localhost:4010/mcp`).
 
-You want **Running** and endpoint `http://127.0.0.1:4010/mcp`. If Stopped, use **Start server** or type `MCP4Rhino`.
+    <Tabs>
+      <Tab title="Claude Desktop">
+        Merge this into your Claude Desktop MCP config, then restart Claude:
 
-<Tip>
-  On macOS the menu is a top-level **MCP4Rhino** item in the menu bar. Looking only under **Tools** is a common miss.
-</Tip>
+        ```json
+        {
+          "mcpServers": {
+            "mcp4rhino": {
+              "command": "npx",
+              "args": ["mcp-remote", "http://localhost:4010/mcp"]
+            }
+          }
+        }
+        ```
 
-## Step 3: Connect your AI assistant
+        Details: [How to connect Claude Desktop](/howto/connect-claude).
+      </Tab>
+      <Tab title="Cursor">
+        Add an MCP server that runs:
 
-Add an MCP server that runs:
+        ```text
+        npx mcp-remote http://127.0.0.1:4010/mcp
+        ```
 
-```text
-npx mcp-remote http://127.0.0.1:4010/mcp
-```
+        Enable `mcp4rhino` in Cursor MCP settings, then reload MCP or restart Cursor.
 
-Full Claude Desktop and Cursor steps: [How to connect Claude or Cursor](/guides/connect-claude-cursor).
+        Details: [How to connect Cursor](/howto/connect-cursor).
+      </Tab>
+    </Tabs>
+  </Step>
 
-Restart or reload MCP in the client after saving config.
+  <Step title="Try your first prompt">
+    With Rhino open and the server Running, ask your assistant:
 
-## Step 4: Try your first request
+    > What objects are currently in my Rhino document?
 
-With Rhino open, a document active, MCP4Rhino running, and the client connected, ask:
-
-> What objects are currently in my Rhino document?
-
-You should get a summary from the active document. Then try a small create or measure request and watch Rhino update.
+    You should get a summary from the active document. Then try a small create or measure request and watch Rhino update.
+  </Step>
+</Steps>
 
 ## What you built
 
-You now have:
+You now have a local MCP bridge from your AI assistant into Rhino. Next:
 
-- MCP4Rhino installed and listening on port **4010**
-- An AI client bridged to `http://127.0.0.1:4010/mcp`
-- A verified path from natural language → Rhino tools
+- Browse the [MCP tools reference](/reference/mcp-tools)
+- Fix connection issues with [How to troubleshoot](/howto/troubleshoot)
 
-Next: [MCP tools reference](/reference/mcp-tools) · [Troubleshooting](/guides/troubleshoot)
+Keep Rhino open while the assistant is modeling. If Status shows Stopped, the client cannot reach the document.

@@ -1,46 +1,53 @@
 ---
 title: "Architecture"
-description: "Why MCP4Rhino splits host, Tools, and Logic — and what that means for reloads"
+description: "Why MCP4Rhino splits host, Tools, and Logic — and what that means for reloads."
 ---
 
-MCP4Rhino needs to stay thin in Rhino’s host process while still exposing a large, fast-changing tool surface to AI clients. The split between host, Tools, and Logic is how that stays workable.
+MCP4Rhino is a Rhino 8 plugin that exposes modeling capabilities over a local MCP HTTP endpoint. The design keeps the host thin and puts most product surface in reloadable assemblies.
 
 ## The problem
 
-If every MCP tool lived in the host `.rhp`, every tool edit would force a Rhino restart. That kills the agent loop: edit → rebuild → wait → reconnect. At the same time, HTTP listening, Rhino commands, and RUI menus must live in a plugin Rhino loads at startup.
+Rhino plugins normally require a full restart to pick up code changes. Restarting Rhino for every tool tweak is slow for contributors and agents. At the same time, the HTTP listener, Rhino commands, and UI must stay stable while tools evolve.
+
+A single monolithic `.rhp` would force restarts for every change and couple the network host to every geometry helper.
 
 ## The approach
 
-```text
-AI client  --HTTP MCP-->  Host (.rhp)  --load-->  Tools (+ Logic) ALC
-                              |                         |
-                         commands, RUI            tool implementations
-                         port, autostart          geometry / arch helpers
+```
+AI client ──► mcp-remote / HTTP ──► MCP4Rhino host (.rhp)
+                                        │
+                                        ├─ HTTP listener (port 4010)
+                                        ├─ Rhino commands + Status UI
+                                        └─ ToolLoader ──► Tools + Logic (collectible ALC)
+                                              │
+                                              └─ RhinoCommon document ops (UI thread)
 ```
 
-| Layer | Role | Reload |
-|-------|------|--------|
-| **Host** (`MCP4Rhino`) | `.rhp`, HTTP listener, Rhino commands, Status UI, RUI menu | Restart Rhino |
-| **Tools** (`MCP4Rhino.Tools`) | MCP tool implementations (`RhinoToolCatalog`, surface/curve/arch tools, …) | Hot-reload — no restart |
-| **Logic** (`MCP4Rhino.Logic`) | Pure helpers (`SurfaceOps`, `CurveOps`, `SupportInfo`, …) loaded with Tools | Hot-reload with Tools |
-| **Contracts** (`MCP4Rhino.Contracts`) | Shared bridge interfaces | Usually with host |
+| Assembly | Role | Reload |
+|----------|------|--------|
+| Host (`MCP4Rhino`) | `.rhp`, HTTP listener, commands, Status dialog, RUI menu | Restart Rhino |
+| Tools (`MCP4Rhino.Tools`) | MCP tool implementations | Hot-reload |
+| Logic (`MCP4Rhino.Logic`) | Pure helpers used by Tools | Hot-reload with Tools |
+| Contracts | Shared bridge interfaces | Usually with host |
 
-Prefer new capabilities in **Tools** (and **Logic** helpers). Keep the host thin.
+Prefer new MCP capabilities in **Tools** (and **Logic** helpers). Keep the host thin.
 
-Hot-reload copies DLLs into the installed package, then `MCP4RhinoReload` / `mcp4rhino_reload` swaps the collectible assembly load context. The HTTP server can keep listening; clients keep the same URL unless the port changed.
+Document and view mutations run on the UI thread so Rhino stays consistent.
 
 ## Trade-offs
 
-- **Faster tool iteration** at the cost of a stricter boundary: host APIs that Tools need must go through Contracts or careful shared types.
-- **Two upgrade paths** for developers: hot-reload vs full `install-yak` + restart. Choosing wrong leaves you running old code.
-- **Local-only MCP** keeps modeling on your machine and avoids cloud Rhino hosting — but Rhino must be open, and Linux clients need a Windows Rhino host.
+- **Hot-reload speed vs host rigidity.** Tools iterate without restart; host/command/RUI changes still need install + restart.
+- **Local-only by design.** Loopback MCP keeps modeling on your machine. Cross-machine use means you point the client at another host’s IP; there is no cloud collaboration layer in the plugin.
+- **Client bridge required.** Most assistants use `npx mcp-remote` to speak MCP over stdio to the HTTP server. Native HTTP MCP is optional when the client supports it.
 
 ## Alternatives considered
 
-- **Everything in the host:** simplest packaging, worst edit loop.
-- **Out-of-process tool server:** cleaner isolation, harder RhinoCommon UI-thread and document access.
-- **Native HTTP-only clients without `mcp-remote`:** supported when the client can speak HTTP MCP; `npx mcp-remote` remains the common bridge for Claude Desktop / Cursor today.
+- **All tools in the host** — simpler packaging, but every tool change forces a Rhino restart.
+- **External process MCP server** — avoids plugin reloads, but loses tight RhinoCommon/UI-thread access and complicates install for end users.
 
 ## Related
 
-[Install from source](/guides/install-from-source) · [Commands](/reference/commands) · [MCP tools](/reference/mcp-tools)
+- [How to hot-reload tools](/howto/hot-reload)
+- [How to install from source](/howto/install-from-source)
+- [MCP tools reference](/reference/mcp-tools)
+- [Configuration](/reference/configuration)

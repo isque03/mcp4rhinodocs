@@ -1,0 +1,46 @@
+---
+title: "How to hot-reload tools"
+description: "Rebuild Tools and Logic DLLs and reload them without restarting Rhino."
+---
+
+You will update MCP tool implementations in a running Rhino session after editing the source repo.
+
+## Prerequisites
+
+- MCP4Rhino installed from this repository (or a package you can overwrite)
+- Clone of [mcp4rhino](https://github.com/isque03/mcp4rhino) at the version you are editing
+- Rhino open with MCP4Rhino loaded
+
+## Steps
+
+1. Change code under `src/MCP4Rhino.Tools/` and/or `src/MCP4Rhino.Logic/` only.
+
+2. Rebuild and copy into the installed package:
+
+   <Tabs>
+     <Tab title="macOS">
+       ```bash
+       bash scripts/hot-reload-tools.sh
+       ```
+     </Tab>
+     <Tab title="Windows">
+       ```powershell
+       powershell -ExecutionPolicy Bypass -File scripts/hot-reload-tools.ps1
+       ```
+     </Tab>
+   </Tabs>
+
+3. In Rhino, run `MCP4RhinoReload`, or call the MCP tool `mcp4rhino_reload`.
+
+4. Keep using the same endpoint (`http://127.0.0.1:4010/mcp` unless `MCP4RHINO_PORT` changed). Clients do not need a new URL.
+
+## Verification
+
+- `tools/list` shows new tool names or updated descriptions
+- A changed tool behaves as expected
+
+If behavior is still old, you likely needed a full `install-yak` + Rhino restart (host `.rhp` / Contracts / new commands).
+
+## When not to hot-reload
+
+Restart Rhino after changes to the host plugin (`src/MCP4Rhino/`), Contracts, or new Rhino command registrations. See [Architecture](/explanation/architecture).

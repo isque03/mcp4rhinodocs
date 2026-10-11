@@ -2,31 +2,35 @@
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
   "name": "MCP4Rhino",
+  "description": "Connect Rhino 8 to Claude, Cursor, and other AI assistants via MCP.",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#2563EB",
+    "light": "#3B82F6",
+    "dark": "#1D4ED8"
   },
   "favicon": "/favicon.svg",
   "navigation": {
     "groups": [
       {
-        "group": "Getting started",
-        "pages": [
-          "index",
-          "quickstart"
-        ]
+        "group": "Get started",
+        "icon": "rocket",
+        "pages": ["index", "quickstart"]
       },
       {
-        "group": "How-to guides",
+        "group": "How to",
+        "icon": "list-check",
         "pages": [
-          "guides/connect-claude-cursor",
-          "guides/troubleshoot",
-          "guides/install-from-source"
+          "howto/connect-claude",
+          "howto/connect-cursor",
+          "howto/troubleshoot",
+          "howto/report-issues",
+          "howto/install-from-source",
+          "howto/hot-reload"
         ]
       },
       {
         "group": "Reference",
+        "icon": "book",
         "pages": [
           "reference/commands",
           "reference/configuration",
@@ -35,9 +39,8 @@
       },
       {
         "group": "Explanation",
-        "pages": [
-          "explanation/architecture"
-        ]
+        "icon": "lightbulb",
+        "pages": ["explanation/architecture"]
       }
     ]
   },

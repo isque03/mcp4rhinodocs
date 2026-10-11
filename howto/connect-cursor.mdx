@@ -1,0 +1,63 @@
+---
+title: "How to connect Cursor"
+description: "Add MCP4Rhino as an MCP server in Cursor."
+---
+
+You will register MCP4Rhino in Cursor so the agent can model in the open Rhino document.
+
+## Prerequisites
+
+- Rhino 8 with MCP4Rhino installed
+- MCP4Rhino **Running** (confirm with **MCP4Rhino → Status…** or `MCP4RhinoStatus`)
+- [Node.js](https://nodejs.org/) installed so `npx` works
+- Cursor with MCP support
+
+## Steps
+
+1. Confirm the endpoint in Status. Default: `http://127.0.0.1:4010/mcp` (port **4010**).
+
+2. Open MCP settings in Cursor:
+
+   - **Cursor Settings → MCP** (or **Features → MCP**), then add a new server, **or**
+   - Create/edit a project file at `.cursor/mcp.json` in your project root
+
+3. Add a server named `mcp4rhino` that runs:
+
+   ```text
+   npx mcp-remote http://127.0.0.1:4010/mcp
+   ```
+
+   Example JSON (UI “add server” or `.cursor/mcp.json`):
+
+   ```json
+   {
+     "mcpServers": {
+       "mcp4rhino": {
+         "command": "npx",
+         "args": ["mcp-remote", "http://127.0.0.1:4010/mcp"]
+       }
+     }
+   }
+   ```
+
+4. Enable the `mcp4rhino` server. Reload MCP or restart Cursor.
+
+5. If your Cursor build supports native HTTP MCP to that URL, you may use that instead of `mcp-remote`.
+
+## Verification
+
+Ask the agent:
+
+> Call get_document_info on MCP4Rhino.
+
+You should see units, layers, and object counts from the active Rhino document.
+
+## Troubleshooting
+
+| Problem | Fix |
+|---------|-----|
+| Server shows error / red | Check Node/`npx`. Restart Cursor after config changes. |
+| Connection refused | Open Rhino; Start server from Status if Stopped. |
+| Linux Cursor, Rhino on Windows VM | Use `http://<windows-host>:4010/mcp` instead of `127.0.0.1`. |
+
+See also: [Quickstart](/quickstart), [How to troubleshoot](/howto/troubleshoot).

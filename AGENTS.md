@@ -2,34 +2,32 @@
 
 ## About this project
 
-- Public docs site for **MCP4Rhino** (Rhino 8 plugin + local MCP server)
+- Public **end-user** docs for **MCP4Rhino** (Rhino 8 plugin + local MCP server)
 - Built on [Mintlify](https://mintlify.com); pages are MDX with YAML frontmatter
 - Configuration lives in `docs.json`
-- Product source of truth: https://github.com/isque03/mcp4rhino
-- This repo (`mcp4rhinodocs`) is the Mintlify deploy target (auto-deploy on push)
+- Product source: https://github.com/isque03/mcp4rhino
+- Auto-deploys on push when connected to Mintlify
 
 ## Terminology
 
-- **MCP4Rhino** — product / Rhino package name (not "MCP for Rhino")
-- **Endpoint** — default `http://127.0.0.1:4010/mcp`
-- **Host** — the `.rhp` plugin (commands, HTTP, RUI)
-- **Tools / Logic** — hot-reloadable MCP tool assemblies
-- **Status** — Status dialog / `MCP4RhinoStatus` / `MCP4RhinoStatusUI`
-- Menu: Windows **Tools → MCP4Rhino**; macOS top-level **MCP4Rhino**
+- **MCP4Rhino** — the Rhino plugin and product name (not "MCP for Rhino" as a title)
+- **MCP** — Model Context Protocol
+- **Status** — the MCP4Rhino Status dialog (`MCP4RhinoStatus` / `MCP4RhinoStatusUI`)
+- Default endpoint: `http://127.0.0.1:4010/mcp` (port **4010**)
+- Menu: Windows under **Tools**; macOS **top-level MCP4Rhino** menu
 
 ## Style preferences
 
+- Write for end users (architects, designers, students) — not plugin developers
 - Use active voice and second person ("you")
 - Keep sentences concise — one idea per sentence
 - Use sentence case for headings
-- Bold for UI elements: Click **Settings**
-- Code formatting for file names, commands, paths, and code references
-- Do not invent ports other than **4010** (unless documenting `MCP4RHINO_PORT`)
-- Code checks are **findings only** — never claim legal compliance or an RA stamp
-- Follow Diataxis: tutorials teach, how-tos accomplish a task, reference lists facts, explanation covers why
+- Bold for UI elements: Click **Status…**
+- Code formatting for commands, paths, tool names, and env vars
+- Diataxis: tutorials learn, how-tos do, reference lists facts
+- Never invent ports other than 4010 / `MCP4RHINO_PORT`
 
 ## Content boundaries
 
-- End-user install, connect, troubleshoot, and tool/command reference belong here
-- Deep contributor playbooks (`CLAUDE.md`, CI publish runbooks) stay in the product repo; link out when needed
-- Do not document unpublished internal admin tooling
+- In scope: install (Package Manager / release `.yak`), connect Claude/Cursor, Status, troubleshoot, report issues, commands/config/tools reference
+- Out of scope on this site: hot-reload, install-from-source, host/Tools/Logic architecture, CI/publish runbooks — those stay in the product repo

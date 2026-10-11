@@ -1,30 +1,25 @@
 # MCP4Rhino docs
 
-Mintlify documentation for [MCP4Rhino](https://github.com/isque03/mcp4rhino).
-
-Push to `main` to trigger Mintlify auto-deploy (when the site is linked in the Mintlify dashboard).
+End-user Mintlify documentation for [MCP4Rhino](https://github.com/isque03/mcp4rhino).
 
 ## Local preview
 
 ```bash
-npm i -g mint
-cd mcp4rhinodocs
-mint dev
+npx mintlify dev
 ```
 
-Open the URL printed by the CLI (usually `http://localhost:3000`).
+Open the URL Mintlify prints (usually `http://localhost:3000`).
 
-Legacy alias: `npx mintlify dev` if you still use the older package name.
+## Deploy
+
+Push to `main`. Mintlify auto-deploys when this GitHub repo is connected in the Mintlify dashboard.
 
 ## Structure (Diataxis)
 
 | Path | Quadrant |
 |------|----------|
 | `index.mdx`, `quickstart.mdx` | Intro + tutorial |
-| `guides/*` | How-to |
-| `reference/*` | Reference |
-| `explanation/*` | Explanation |
+| `howto/*` | Task guides (connect, troubleshoot, report issues) |
+| `reference/*` | Commands, config, MCP tools |
 
-## Product repo
-
-Source, Yak package, and contributor docs: https://github.com/isque03/mcp4rhino
+Contributor playbooks stay in the product repo, not this site.

@@ -1,33 +1,35 @@
 ---
 title: "Configuration"
-description: "Environment variables, default port, logs, and MCP endpoint"
+description: "MCP endpoint, ports, and MCP4RHINO_* environment variables."
 ---
 
-MCP4Rhino listens on loopback by default. Override port and autostart with environment variables before launching Rhino.
+MCP4Rhino listens for JSON-RPC MCP requests over HTTP on the local machine.
 
 ## Endpoint
 
-| Item | Value |
-|------|-------|
-| Default URL | `http://127.0.0.1:4010/mcp` |
-| Health check | `http://127.0.0.1:4010/` (plain OK when up) |
-| Transport | Local HTTP JSON-RPC (MCP) |
+| Item | Default |
+|------|---------|
+| URL | `http://127.0.0.1:4010/mcp` |
+| Port | **4010** |
+| Bind | Loopback (local only) |
 
-Clients typically use:
+Clients typically use `npx mcp-remote http://127.0.0.1:4010/mcp` (or `localhost`). Native HTTP MCP to the same URL works when the client supports it.
 
-```text
-npx mcp-remote http://127.0.0.1:4010/mcp
-```
+Open `http://127.0.0.1:4010/` in a browser for a plain OK response when the server is up.
 
 ## Environment variables
 
-| Variable | Default | Effect |
-|----------|---------|--------|
-| `MCP4RHINO_PORT` | `4010` | Listen port. Invalid/unset → 4010. Update the client URL if you change this. |
-| `MCP4RHINO_AUTOSTART` | on | Set to `0`, `false`, or `no` to disable Idle auto-start. Then run `MCP4Rhino` manually. |
-| `MCP4RHINO_TOOLS_PATH` | (package dir) | Override directory containing `MCP4Rhino.Tools.dll` (development) |
+| Variable | Effect |
+|----------|--------|
+| `MCP4RHINO_PORT` | Listen port. Default **4010** if unset or invalid. Update the AI client URL when you change this. |
+| `MCP4RHINO_AUTOSTART` | Set to `0`, `false`, or `no` to disable Idle auto-start. You must run `MCP4Rhino` (or Start in Status) yourself. |
+| `MCP4RHINO_TOOLS_PATH` | Override directory containing `MCP4Rhino.Tools.dll` (developers / advanced installs). |
 
-Set these in the environment that launches Rhino (shell, launch agent, or system env), then start Rhino.
+Set these in the environment that launches Rhino (shell profile, launch agent, or system env on Windows).
+
+## Auto-start
+
+On plugin load, MCP4Rhino schedules an Idle auto-start unless `MCP4RHINO_AUTOSTART` disables it. Confirm with Status after Rhino settles.
 
 ## Logs
 
@@ -36,12 +38,9 @@ Set these in the environment that launches Rhino (shell, launch agent, or system
 | macOS | `~/Library/Logs/MCP4Rhino/mcp4rhino.log` |
 | Windows | `%LOCALAPPDATA%\MCP4Rhino\mcp4rhino.log` |
 
-Default viewport capture PNGs use the same log directory on macOS, and `%LOCALAPPDATA%\MCP4Rhino\` on Windows (or a `path` argument).
-
-## Document units (agent rule)
-
-Length arguments on create/transform tools are in the **current document unit system**. If the user says “32 inches” and the file is in Feet, call `convert_length` first, then create, then verify with `measure_size` or `measure_distance`.
+Default viewport capture PNG directories use the same log/appdata roots (platform-specific). See `capture_viewport` in [MCP tools](/reference/mcp-tools).
 
 ## Related
 
-[Commands](/reference/commands) · [Troubleshooting](/guides/troubleshoot) · [Architecture](/explanation/architecture)
+- [Rhino commands](/reference/commands)
+- [How to connect Claude](/howto/connect-claude) / [Cursor](/howto/connect-cursor)

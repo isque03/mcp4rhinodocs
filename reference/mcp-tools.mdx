@@ -1,9 +1,11 @@
 ---
 title: "MCP tools"
-description: "Complete inventory of MCP4Rhino tools exposed at the local endpoint"
+description: "Inventory of MCP4Rhino tools exposed at http://127.0.0.1:4010/mcp."
 ---
 
-Tools available at `http://127.0.0.1:4010/mcp` via `tools/list` and `tools/call`. Lengths on create/transform tools use the **document model unit system** — convert with `convert_length` when the user names inches/feet/mm that differ from `unit_system`.
+Complete inventory for agents and developers. Default endpoint: `http://127.0.0.1:4010/mcp`.
+
+**Document units:** length coordinates on create/transform tools are in the **current document unit system**. If the user says “32 inches” and the file is in Feet, call `convert_length` first, then create, then verify with `measure_size` or `measure_distance`.
 
 `initialize` returns MCP `instructions` pointing agents at [GitHub Issues](https://github.com/isque03/mcp4rhino/issues) and `get_support_info` before filing bugs or enhancements.
 
@@ -29,6 +31,12 @@ Tools available at `http://127.0.0.1:4010/mcp` via `tools/list` and `tools/call`
 | `get_support_info` | Version, endpoint, log path, GitHub Issues URLs, filing tips |
 | `mcp4rhino_reload` | Hot-reload Tools and Logic |
 
+### `capture_viewport` notes
+
+- **macOS:** scripted `ViewCaptureToFile` (no `width`/`height` into the script). Default PNG under `~/Library/Logs/MCP4Rhino/`.
+- **Windows:** ViewCaptureToFile first; CaptureToBitmap fallback uses `width`/`height`. Default under `%LOCALAPPDATA%\MCP4Rhino\`.
+- When embedded, content includes `type: "image"` / `mimeType: "image/png"`. Oversize omit: `image_embedded: false`, `image_omitted_reason: "exceeds_max_bytes"` (1 MiB raw).
+
 ## Curves and solids
 
 - **Create:** `create_point`, `create_line`, `create_polyline`, `create_circle`, `create_arc`, `create_ellipse`, `create_polygon`, `create_rectangle`, `create_curve`
@@ -41,7 +49,7 @@ Tools available at `http://127.0.0.1:4010/mcp` via `tools/list` and `tools/call`
 - **Edit:** `fillet_surfaces`, `blend_surfaces`, `chamfer_surfaces`, `offset_surface`, `trim_surface`, `split_surface`, `join_surfaces`, `cap_planar_holes`
 - **Edges:** `list_surface_edges`, `dup_border`, `dup_edge`, `extract_isocurve`
 
-Surface face pick for fillet/chamfer: `face_index_*` or `pick_point_*`. Edge pick for blend/dup_edge: `edge_index` or `pick_point` from `list_surface_edges`.
+Surface face pick for fillet/chamfer: `face_index_*` or `pick_point_*`. Edge pick for blend/`dup_edge`: `edge_index` or `pick_point` from `list_surface_edges`.
 
 ## Architecture
 
@@ -55,30 +63,13 @@ Semantic tags use `mcp4:` user-text keys on model objects.
 
 ## Interop and analysis
 
-`check_rhino_license`, `export_3dm` (requires valid license / active eval — call `check_rhino_license` first), `export_ifc`, `clash_detect`, `quantity_takeoff`, and related link helpers as listed in Tools.
+`check_rhino_license`, `export_3dm` (requires valid license / active eval — call `check_rhino_license` first), `export_ifc`, `clash_detect`, `quantity_takeoff`, and related helpers.
 
 ## Code checks
 
-`set_code_context`, `run_code_checks`, `get_code_report` — **findings only**. Never claim legal “code compliant” status or an RA stamp.
-
-## Examples
-
-List tools:
-
-```bash
-curl -sS -X POST http://127.0.0.1:4010/mcp \
-  -H 'Content-Type: application/json' \
-  -d '{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}'
-```
-
-Call `get_document_info`:
-
-```bash
-curl -sS -X POST http://127.0.0.1:4010/mcp \
-  -H 'Content-Type: application/json' \
-  -d '{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"get_document_info","arguments":{}}}'
-```
+`set_code_context`, `run_code_checks`, `get_code_report`
 
 ## Related
 
-[Quickstart](/quickstart) · [Configuration](/reference/configuration) · [Architecture](/explanation/architecture)
+- [Quickstart](/quickstart)
+- [How to troubleshoot](/howto/troubleshoot)

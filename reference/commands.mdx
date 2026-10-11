@@ -1,45 +1,40 @@
 ---
-title: "Rhino commands"
-description: "MCP4Rhino command-line names, menu entries, and Status dialog actions"
+title: "Rhino commands and menu"
+description: "MCP4Rhino command-line names, Status dialog, and menu locations on Windows and macOS."
 ---
 
-Rhino commands shipped with the MCP4Rhino host plugin. Type these in the Rhino **command line**, or use the **MCP4Rhino** menu.
+MCP4Rhino registers Rhino commands and a toolbar/menu from `MCP4Rhino.rui` next to the plugin `.rhp`.
 
 ## Menu location
 
-| Platform | Menu path |
-|----------|-----------|
-| Windows | **Tools → MCP4Rhino → …** |
-| macOS | Top-level **MCP4Rhino → …** (not under Tools) |
+| Platform | Where to find **MCP4Rhino** |
+|----------|-----------------------------|
+| Windows | Under the **Tools** menu |
+| macOS | Top-level **MCP4Rhino** menu in the menu bar (not under Tools) |
 
-The menu comes from `MCP4Rhino.rui` next to the `.rhp`. Menu macros run scripted, so **Status…** maps to `MCP4RhinoStatusUI` (always opens the dialog).
+Typical menu items: **Status…**, **Check for updates…**, **Report issue…**, and related entries wired to the commands below.
 
 ## Commands
 
-| Command | Purpose |
-|---------|---------|
+| Command | What it does |
+|---------|----------------|
 | `MCP4Rhino` | Start the MCP HTTP server (also used if auto-start was skipped) |
 | `MCP4RhinoStop` | Stop the server |
-| `MCP4RhinoStatus` | Command-line summary; opens Status dialog when run interactively (not scripted) |
-| `MCP4RhinoStatusUI` | Always opens the Status dialog (used by the menu) |
+| `MCP4RhinoStatus` | Command-line summary; opens the Status dialog when run interactively (not scripted) |
+| `MCP4RhinoStatusUI` | Always opens the Status dialog (used by menu **Status…**; RUI macros are scripted) |
 | `MCP4RhinoUpdates` | Open Rhino Package Manager |
 | `MCP4RhinoReportIssue` | Open GitHub Issues in the browser |
-| `MCP4RhinoReload` | Hot-reload `MCP4Rhino.Tools.dll` (+ Logic) without restarting Rhino |
+| `MCP4RhinoReload` | Hot-reload `MCP4Rhino.Tools.dll` and Logic |
+
+Type these in the Rhino **command line**, not Help search.
 
 ## Status dialog
 
-Interactive Status shows:
+The Status dialog shows running/stopped state, endpoint URL, version, autostart flag, and actions such as Start/Stop, Copy endpoint, Updates, Open log, and Report issue.
 
-- Running / Stopped
-- Endpoint URL (default `http://127.0.0.1:4010/mcp`)
-- Autostart on/off (`MCP4RHINO_AUTOSTART`)
-- Actions: Start / Stop, Copy endpoint, Updates, Open log, Report issue
+Use it as the first check when an AI client cannot connect. See [How to troubleshoot](/howto/troubleshoot).
 
-## Related MCP tools
+## Related
 
-| Tool | Purpose |
-|------|---------|
-| `get_support_info` | Version, endpoint, log path, GitHub Issues URLs, filing tips |
-| `mcp4rhino_reload` | Same hot-reload as `MCP4RhinoReload`, callable from the AI client |
-
-See also: [Configuration](/reference/configuration) · [MCP tools](/reference/mcp-tools)
+- [Configuration](/reference/configuration) — ports and environment variables
+- [How to report issues](/howto/report-issues)

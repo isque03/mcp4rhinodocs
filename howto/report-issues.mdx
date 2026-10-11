@@ -1,0 +1,37 @@
+---
+title: "How to report an issue"
+description: "Collect support info and file a bug or enhancement on GitHub."
+---
+
+You will gather version and endpoint details, then open a GitHub Issue with enough context to reproduce.
+
+## Prerequisites
+
+- MCP4Rhino installed (any channel)
+- Optional: AI assistant connected so you can call `get_support_info`
+
+## Steps
+
+1. Collect diagnostics. Prefer one of:
+   - In Rhino: **MCP4Rhino → Report issue…** (opens GitHub Issues)
+   - In Rhino: **MCP4Rhino → Status…** and note version, endpoint, log path
+   - Ask your assistant to call the MCP tool `get_support_info`
+
+2. Open [GitHub Issues](https://github.com/isque03/mcp4rhino/issues).
+
+3. Create a **bug** or **enhancement** issue. Include:
+   - MCP4Rhino version (from Status / `get_support_info`)
+   - Rhino 8 version and OS (Windows / macOS)
+   - Whether Status showed Running
+   - Client used (Claude Desktop, Cursor, other)
+   - Steps to reproduce and expected vs actual behavior
+   - Relevant lines from the log file if available
+
+## Verification
+
+The issue page shows your report with version and reproduction steps. Maintainers can match it to a package build.
+
+## Related
+
+- Issues tracker: https://github.com/isque03/mcp4rhino/issues
+- Updates in Rhino: **MCP4Rhino → Check for updates…** (`MCP4RhinoUpdates`) opens Package Manager

@@ -1,0 +1,60 @@
+---
+title: "How to connect Claude Desktop"
+description: "Point Claude Desktop at the local MCP4Rhino server with mcp-remote."
+---
+
+You will configure Claude Desktop so it can call MCP4Rhino tools in the open Rhino document.
+
+## Prerequisites
+
+- Rhino 8 with MCP4Rhino installed
+- MCP4Rhino **Running** (confirm with **MCP4Rhino → Status…** or `MCP4RhinoStatus`)
+- [Node.js](https://nodejs.org/) installed so `npx` works
+- Claude Desktop installed
+
+## Steps
+
+1. Confirm the endpoint in Status. Default: `http://127.0.0.1:4010/mcp` (port **4010** unless you set `MCP4RHINO_PORT`). `localhost` is the same host.
+
+2. Open Claude Desktop’s MCP config file `claude_desktop_config.json`:
+
+   | OS | Typical path |
+   |----|----------------|
+   | macOS | `~/Library/Application Support/Claude/claude_desktop_config.json` |
+   | Windows | `%APPDATA%\Claude\claude_desktop_config.json` |
+
+   Create the file if it does not exist yet.
+
+3. Merge the `mcp4rhino` server entry:
+
+   ```json
+   {
+     "mcpServers": {
+       "mcp4rhino": {
+         "command": "npx",
+         "args": ["mcp-remote", "http://127.0.0.1:4010/mcp"]
+       }
+     }
+   }
+   ```
+
+   If you already have other servers under `mcpServers`, add only the `mcp4rhino` key — do not replace the whole object.
+
+4. Fully quit and reopen Claude Desktop.
+
+5. In a chat, ask: “What objects are in my Rhino document?”
+
+## Verification
+
+- Claude can call tools such as `get_document_info` or `get_objects`.
+- Geometry changes appear in the Rhino viewport when you ask for a create or edit.
+
+## Troubleshooting
+
+| Problem | Fix |
+|---------|-----|
+| Tools missing in Claude | Restart Claude after editing config. Confirm `npx` works in a terminal. |
+| Connection refused | Rhino must be open; Status must show Running. |
+| Wrong port | Match `args` URL to Status / `MCP4RHINO_PORT`. |
+
+See also: [How to troubleshoot](/howto/troubleshoot), [Configuration reference](/reference/configuration).
