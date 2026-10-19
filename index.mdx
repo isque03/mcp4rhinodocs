@@ -5,7 +5,7 @@ description: "Design and build 3D models in Rhino 8 using Claude, Cursor, and ot
 
 MCP4Rhino is a [Rhino 8](https://www.rhino3d.com/) plugin that hosts a local [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server. Your AI assistant connects to that server and can create, inspect, and edit geometry in the open document.
 
-Everything stays on your machine. Rhino must be running. You bring your own AI client (Claude Desktop, Cursor, or any MCP-compatible assistant).
+Rhino and the MCP server run on your machine. Rhino must be running. You bring your own AI client (Claude Desktop, Cursor, or any MCP-compatible assistant).
 
 <Tip>
   Fastest path: [Quickstart](/quickstart) — install from Package Manager, connect your assistant, ask what is in the document.
@@ -41,6 +41,23 @@ flowchart LR
 ```
 
 Default endpoint: `http://127.0.0.1:4010/mcp`.
+
+## Grasshopper support (alpha)
+
+**MCP4Rhino 0.6.0-alpha** adds tools for editable **Grasshopper 1** definitions in Rhino 8. Your assistant can build a graph of parameters and relationships, request a solve, inspect data trees and diagnostics, save the definition, and explicitly bake geometry snapshots.
+
+<Warning>
+  Grasshopper support is experimental. Native graph, solve, undo, bake, and save/reopen validation is still pending licensed Windows and macOS testing. Enable **Include pre-releases** in Rhino Package Manager to try the alpha; stable users can stay on **0.5.3**.
+</Warning>
+
+<CardGroup cols={2}>
+  <Card title="Grasshopper capabilities" icon="diagram-project" href="/grasshopper/overview">
+    Learn about parameters, native graphs, preview, baking, and alpha limits.
+  </Card>
+  <Card title="Install and test the alpha" icon="flask" href="/grasshopper/install-alpha">
+    Opt in, verify the version, build your first study, and return to stable.
+  </Card>
+</CardGroup>
 
 ## Next steps
 

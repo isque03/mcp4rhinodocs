@@ -1,0 +1,143 @@
+---
+title: "How to install and test the alpha"
+description: "Install MCP4Rhino 0.6.0-alpha through Rhino Package Manager, check Grasshopper, run native test scenarios, and return to stable."
+---
+
+Install the experimental Grasshopper tools, confirm the loaded version, and collect useful native testing results.
+
+<Warning>
+  **MCP4Rhino 0.6.0-alpha is an opt-in testing release.** Native Grasshopper graph editing, solving, undo, baking, and file round trips are not yet verified on Windows or macOS. Use disposable documents and save existing work before testing. Stable users can stay on **0.5.3**.
+</Warning>
+
+## Prerequisites
+
+- Usable **Rhino 8 licensing** on Windows or macOS. The initial native testing target is **Rhino 8.35** with its bundled **Grasshopper 1**.
+- An AI client connected to MCP4Rhino. Follow the [quickstart](/quickstart) if you have not connected one yet.
+- Internet access for Package Manager. Python 3 is optional for the automated smoke tests.
+
+An expired evaluation or view-only installation can prevent plugin loading. Grasshopper 2 is not needed or supported by these tools.
+
+## Install the alpha
+
+<Steps>
+  <Step title="Choose the prerelease">
+    Run `PackageManager` in Rhino. Enable **Include pre-releases**, search **MCP4Rhino**, and select **0.6.0-alpha** in the version selector.
+
+    If `0.5.3` has a checkmark and `0.6.0-alpha` has an update arrow, Rhino is showing your installed stable version and the available alpha update.
+  </Step>
+  <Step title="Install and restart">
+    Click **Install** or **Update**, then **Apply**, and fully quit and reopen Rhino. This changes the existing MCP4Rhino installation; it does not install a second plugin alongside stable.
+  </Step>
+  <Step title="Verify the loaded version">
+    Open **MCP4Rhino → Status…** and confirm the server is running. Ask your connected assistant:
+
+    ```text
+    Call get_support_info and confirm server_version is 0.6.0-alpha.
+    Then call gh_help with topic index, gh_status, and get_document_units.
+    ```
+
+    `gh_help` should return alpha-version help. `gh_status` checks availability without forcing a load. An uninitialized `available: true` result is only an installation check; component discovery is the next actual load check.
+  </Step>
+</Steps>
+
+## Verify native Grasshopper loading
+
+Open a disposable Rhino document. Ask the assistant:
+
+```text
+Search the installed Grasshopper component catalog for Number Slider.
+Describe a supported result and report its component type ID, ports, and settings.
+Also call get_document_info to check that ordinary Rhino tools still work.
+```
+
+If discovery fails, preserve the exact error and `help_topic`; see the troubleshooting table below. Do not treat an availability flag as a successful graph test.
+
+## Test create, edit, solve, save, and bake
+
+Start with [your first parametric array](/grasshopper/first-definition), then ask the assistant to load `gh_help` topics `examples/facade` and `examples/loft`.
+
+For each study, inspect the native components and wires, change an independent control, and check the output count, branch paths, dimensions, and component diagnostics. A completed job does not prove the geometry is valid.
+
+Also check these behaviors in test documents:
+
+- A batched patch produces one Grasshopper undo/redo step and at most one requested solve.
+- Manual edits lead the assistant to refresh the revision instead of overwriting them.
+- Deleted or replaced Rhino references produce a recoverable error or invalidate the old results.
+- Switching Rhino documents does not direct a session's edits into another model.
+- Queue cancellation, running cancellation, and long solves are reported accurately. Expensive components can block Rhino's UI.
+- A `.gh` and `.ghx` save/reopen preserves the study. Save the Rhino model separately when using live references.
+- An exact bake retry returns the same object IDs. A new bake request creates a separate snapshot and preserves the previous geometry.
+
+### Optional automated smoke tests
+
+Download **grasshopper-smoke.py** from the [0.6.0-alpha release assets](https://github.com/isque03/mcp4rhino/releases/tag/v0.6.0-alpha). It needs Python 3, a running local MCP4Rhino server, and no extra Python packages or source checkout.
+
+From the directory containing the downloaded file, run:
+
+<Tabs>
+  <Tab title="macOS">
+    ```bash
+    python3 grasshopper-smoke.py --example array
+    python3 grasshopper-smoke.py --example facade --bake
+    python3 grasshopper-smoke.py --example loft
+    ```
+  </Tab>
+  <Tab title="Windows">
+    ```powershell
+    py -3 grasshopper-smoke.py --example array
+    py -3 grasshopper-smoke.py --example facade --bake
+    py -3 grasshopper-smoke.py --example loft
+    ```
+
+    Use `python` in place of `py -3` if your Python 3 installation does not provide the launcher.
+  </Tab>
+</Tabs>
+
+The runner creates its own definitions, checks discovery and graph operations, solves, reads results, varies a control or repairs a tree mapping, and round-trips `.gh`/`.ghx` files. `--bake` also creates two Rhino geometry snapshots and checks retry behavior. It prints a JSON report with the final session, solution, saved file paths, and any baked object IDs, and leaves the final definition open.
+
+If your MCP port differs from the default, pass `--endpoint` with the exact URL shown in Status. A script timeout does not prove a native solve stopped; inspect its job before submitting more work.
+
+## Help your assistant use Grasshopper
+
+The tools include `gh_help`, so local skill installation is optional. Ask for topic `design` when translating a brief into parameters, `data-trees` for branch matching, or `debugging` when repairing a definition.
+
+For a client that supports local skills, download **MCP4Rhino-0.6.0-alpha-skills.zip** from the same release and extract its `grasshopper-parametric-design` directory into the client's skills directory. For Codex, this is normally `~/.codex/skills`; for a Cursor project, `.cursor/skills`. Refresh the client's skill discovery after installation. MCP4Rhino does not install a skill into your AI client automatically.
+
+## Report results
+
+Record **Windows and macOS separately**, including untested scenarios. Follow [How to report an issue](/howto/report-issues) and include:
+
+- MCP4Rhino version, OS version, Rhino build, and AI client.
+- Installation/restart outcome and the first failing step.
+- Expected and actual geometry, dimensions, output counts, and tree structure.
+- Relevant `get_support_info` output, job/component diagnostics, log excerpts, and a minimal definition where possible. Remove secrets and full license keys.
+
+Also check whether a stable installation keeps the stable default with prereleases disabled and exposes the alpha with them enabled. Record actual behavior if automatic package updates are enabled. A later numbered alpha can be checked as an update from the previous alpha; this is a public prerelease selection, not a restricted tester-only channel.
+
+## Return to stable 0.5.3
+
+1. Save work, open `PackageManager`, and uninstall MCP4Rhino's alpha.
+2. Explicitly select and reinstall **0.5.3**. Complete any requested restart between removal and installation.
+3. Disable **Include pre-releases**, apply changes, and fully restart Rhino.
+4. Ask the assistant to call `get_support_info` and confirm `server_version` is `0.5.3`.
+
+Clearing the prerelease checkbox alone does not downgrade an installed alpha. The Grasshopper MCP tools are not part of stable `0.5.3`.
+
+## Troubleshooting
+
+| Symptom | Action |
+| --- | --- |
+| The alpha is missing | Enable **Include pre-releases**, search MCP4Rhino again, and check the version selector. Reopen Package Manager after an index refresh. |
+| `get_support_info` still reports `0.5.3` | Confirm installation was applied, then fully restart Rhino. Reconnect the client if it cached the old tool list. |
+| `gh_` tools are missing | Verify the loaded version before editing anything. The stable package does not expose these tools. |
+| `grasshopper_unavailable` | Call `check_rhino_license`; check view-only mode and whether bundled Grasshopper 1 opens in Rhino. Report the exact error. |
+| `gh_status` looks available but discovery fails | The initial status is an installation check, not a load/solve test. Use the discovery error and its `help_topic` to diagnose. |
+| Revision conflict or expired output | Inspect the current definition, reconcile edits, and solve again. Use the fresh revision/result IDs. |
+| Busy or a long-running solve | Poll `gh_get_job`; cancellation is cooperative. Avoid submitting parallel canvas calls. |
+| Other connection problems | Follow [How to troubleshoot](/howto/troubleshoot) and compare the client URL with Status. |
+
+## Related
+
+- [Capabilities and limits](/grasshopper/overview)
+- [Build a parametric array](/grasshopper/first-definition)
+- [Grasshopper tool reference](/grasshopper/tools)

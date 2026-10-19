@@ -30,6 +30,16 @@
         ]
       },
       {
+        "group": "Grasshopper (alpha)",
+        "icon": "diagram-project",
+        "pages": [
+          "grasshopper/overview",
+          "grasshopper/install-alpha",
+          "grasshopper/first-definition",
+          "grasshopper/tools"
+        ]
+      },
+      {
         "group": "Reference",
         "icon": "book",
         "pages": [

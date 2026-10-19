@@ -1,0 +1,96 @@
+---
+title: "Build your first parametric array"
+description: "Use an AI assistant to build an editable five-circle Grasshopper study, inspect its dimensions, and change the count without rebuilding it."
+---
+
+Build five circles with one editable count control and derived positions. Then change the count to eight while keeping the radius and spacing relationships.
+
+<Warning>
+  This tutorial describes the intended **0.6.0-alpha** workflow. Native execution is still awaiting licensed tester validation. Use a disposable document and report a failed step rather than assuming the geometry is correct.
+</Warning>
+
+## What you'll need
+
+- [MCP4Rhino 0.6.0-alpha installed and verified](/grasshopper/install-alpha), usable Rhino 8 licensing, and bundled Grasshopper 1.
+- A connected [Claude](/howto/connect-claude), [Cursor](/howto/connect-cursor), or other MCP assistant.
+- A new disposable Rhino document. Keep its unit system unchanged during the study.
+
+You will work in **model units**, the length units of that Rhino document. A radius of `1` means one model unit, not necessarily one millimeter or one meter.
+
+## Step 1: Check the context and load the example
+
+Send this prompt to your assistant:
+
+```text
+Call get_support_info, get_document_units, and gh_status.
+Confirm MCP4Rhino is 0.6.0-alpha and tell me the document units.
+Load gh_help with topic examples/array. Summarize the controls,
+the intended component relationships, and the expected output.
+Do not modify an existing Grasshopper definition.
+```
+
+You should see the installed version, model units, and the example recipe. The controls describe five circles of radius `1`, with centers separated by `3` model units along X. If the version is stable `0.5.3`, finish [alpha installation](/grasshopper/install-alpha) first.
+
+## Step 2: Build and inspect the first graph
+
+```text
+Use the array recipe to discover the actual supported component types
+and describe their ports. Create a separate visible definition named
+Array study. Resolve recipe component tokens to discovered IDs.
+Apply the graph in one patch and request one solve. Poll the returned
+job until it stops running, then inspect diagnostics and the moved
+circle output. Report count, branch paths, and bounds. Do not bake.
+```
+
+The intended result is an editable native graph and a five-circle preview. A count slider feeds a Series component; derived positions feed vectors and Move. Inspect the canvas to see those relationships instead of five independently placed objects.
+
+The example's expected measurements are:
+
+| Check | Expected value in model units |
+| --- | --- |
+| Circle count | `5` |
+| Radius | `1` |
+| Center X positions | `0`, `3`, `6`, `9`, `12` |
+| Combined bounds | X: `-1` to `13`; Y: `-1` to `1`; Z: `0` |
+| Tree organization | Five circles in one branch; inspect actual paths because the native solver may add path prefixes. |
+
+A completed job can still have component errors or invalid geometry. If circles overlap or bounds differ, ask the assistant to inspect the first failing stage, its input ports, and upstream values. Do not repair the graph by flattening every input or recreating every node.
+
+## Step 3: Change the count and preserve the relationship
+
+```text
+Inspect Array study for its current revision. Change its count slider
+from five to eight, keeping radius 1 and spacing 3. Use the existing
+graph, solve once, and inspect the current outputs. Verify eight
+circles, last center X=21, and combined X bounds -1 to 22.
+Do not bake or edit individual circle positions.
+```
+
+The intended preview now has eight circles. The extra positions come from the same series relationship; changing the count should not require rewiring or editing each copy.
+
+The old solution handle expires when the parameter changes. Your assistant should use the new `result_id`. If you edited the canvas manually, it should refresh the revision and reconcile your changes before applying its patch.
+
+## Save the definition or bake a snapshot
+
+To keep the reusable recipe, ask the assistant to save **Array study** to a `.gh` or `.ghx` path you choose on the Rhino computer. It should ask for an explicit overwrite if that file exists. Save the Rhino model separately if you later add live references to it.
+
+To create ordinary Rhino objects, ask:
+
+```text
+Bake the current moved-circle output as a new snapshot. Report the
+created Rhino object IDs and preserve any previously baked objects.
+```
+
+Baking copies the current output into Rhino. Future slider edits affect the preview, not that snapshot. A distinct bake request produces another snapshot. See [bake arguments and limits](/grasshopper/tools#gh_bake).
+
+## Try a failure and repair
+
+In the disposable definition, ask the assistant to disconnect Series from the vector X input, solve, and inspect the result. The component's default input may place several circles at the same location. Repair the wire and verify the distinct centers, count, and bounds again.
+
+This shows why a correct count alone is not enough to validate an array.
+
+## What you built
+
+You have a recipe for a parameter-controlled circle array and a way to verify its count and spacing. If a step failed, you also have the first failing stage and expected measurements to include in an [alpha issue report](/howto/report-issues).
+
+Next, load `gh_help` topics `examples/facade` for derived panel spacing and explicit baking, or `examples/loft` for keeping curve families in separate branches. Use the [tool reference](/grasshopper/tools) for exact arguments and the [alpha test guide](/grasshopper/install-alpha) for further checks and rollback.

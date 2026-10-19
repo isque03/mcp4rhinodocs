@@ -66,6 +66,21 @@ Semantic tags use `mcp4:` user-text keys on model objects.
 
 `set_code_context`, `run_code_checks`, `get_code_report`
 
+## Grasshopper (alpha)
+
+**Available in 0.6.0-alpha**, for Grasshopper 1 in Rhino 8. Enable **Include pre-releases** in Package Manager to [install and test the alpha](/grasshopper/install-alpha). Native runtime behavior still needs licensed Windows/macOS validation; these tools are not in stable `0.5.3`.
+
+| Workflow | Tools |
+| --- | --- |
+| Learn and check availability | `gh_help`, `gh_status` |
+| Discover supported components | `gh_search_components`, `gh_describe_components` |
+| Create, attach, save, and close definitions | `gh_list_documents`, `gh_open_document`, `gh_save_document`, `gh_close_document` |
+| Inspect and edit graphs | `gh_inspect_document`, `gh_apply_patch` |
+| Solve and monitor jobs | `gh_solve`, `gh_get_job`, `gh_cancel_job` |
+| Inspect current outputs and bake snapshots | `gh_read_output`, `gh_bake` |
+
+Start with `gh_help` topic `index`. See the [Grasshopper tool reference](/grasshopper/tools) for all arguments, defaults, limits, typed values, and recovery. Follow [the parametric array tutorial](/grasshopper/first-definition) for an editable example.
+
 ## Related
 
 - [Quickstart](/quickstart)

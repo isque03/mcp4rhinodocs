@@ -1,0 +1,230 @@
+---
+title: "Grasshopper tools (alpha)"
+description: "The 15 Grasshopper tools in MCP4Rhino 0.6.0-alpha: arguments, graph edits, data trees, jobs, outputs, and baking."
+---
+
+<Warning>
+  This reference describes **MCP4Rhino 0.6.0-alpha** for **Grasshopper 1 in Rhino 8**. Native graph editing, solving, undo, baking, and file round trips still need licensed Windows and macOS validation. Start with [alpha installation](/grasshopper/install-alpha) and use disposable documents.
+</Warning>
+
+These are MCP tools for your connected assistant, not Rhino command-line commands. They use the same local endpoint as the [ordinary Rhino tools](/reference/mcp-tools).
+
+## Shared arguments and identities
+
+| Argument or identity | Contract |
+| --- | --- |
+| `session_id` | String returned by `gh_open_document`. A session binds one Grasshopper definition to the Rhino document active when it is opened or attached. |
+| `expected_revision` | Nonnegative integer from the latest session summary or inspection. Required for session mutations. Manual edits and relevant Rhino reference changes can advance it. |
+| `request_id` | Nonempty string required by open, patch, solve, bake, save, and close. Use a new value for a new action; reuse the same value and identical arguments for an exact retry. |
+| `component_id` | Component **type** GUID returned by discovery. Used when adding a node; it does not identify a placed node. |
+| `node` | Placed node GUID returned by inspection or `patch.aliases`. A patch may also use aliases created earlier in that same patch. |
+| `port` | Returned port token such as `in:0` or `out:0`. Use descriptions and inspection, not display names or nicknames, to select ports. |
+| `result_id` | Handle for the current solution. Read it from the completed solve's result. Edits, reference changes, or another solution invalidate it. |
+| `offset`, `limit` | For paged tools: offset defaults to `0`; limit defaults to `50` and accepts integers from `1` to `200`. |
+
+Unknown arguments are rejected. Exact mutation retries return the original receipt during the current runtime; receipt persistence does not extend across a Rhino restart. Changed arguments with the same request ID return `request_conflict`.
+
+## Help and availability
+
+### `gh_help`
+
+Optional `topic` string, default `index`. Returns version-matched help without loading Grasshopper or accessing a document.
+
+Topics: `index`, `quickstart`, `design`, `data-trees`, `workflow`, `debugging`, `examples/array`, `examples/facade`, and `examples/loft`. Example topics also return a `recipe` with component type names and patch operations.
+
+```json
+{"topic":"examples/array"}
+```
+
+Recipe `$component` tokens are placeholders for discovery results. Resolve them to actual `component_id` values before submitting a patch.
+
+### `gh_status`
+
+No arguments. Before runtime initialization, returns `initialized`, installation-based `available`, `license_can_save`, `version`, and `help_topic`. This does **not** load or solve a definition. `available: true` at this stage only indicates the expected SDK file exists.
+
+After initialization, returns availability, `busy`, session count, and patch/page/object limits. To check an actual load, use component discovery in a licensed session. Use `get_support_info` to confirm the installed MCP4Rhino version in either state.
+
+## Component discovery
+
+### `gh_search_components`
+
+| Argument | Required | Type / default |
+| --- | --- | --- |
+| `query` | No | String; defaults to an empty query. Matches name, description, category, or full type name. |
+| `offset`, `limit` | No | Shared pagination arguments. |
+
+Returns `total`, `offset`, `next_offset`, and `components`. Entries include type GUID, name, description, category/subcategory, library, full type name, `supported`, and `obsolete`. Follow `next_offset` until it is null. Discovery initializes Grasshopper.
+
+```json
+{"query":"Number Slider","limit":10}
+```
+
+### `gh_describe_components`
+
+Required `component_ids`: array of **1–50 component type GUID strings**. Returns an array of descriptions with input/output port identities, access mode, optional flag, input mappings, persistent-data samples, and settings such as slider bounds.
+
+Unsupported types remain discoverable. Their descriptions have empty ports; discovery is not permission to create or execute them. Use only `supported: true` types. A Number Slider is edited with `set_slider`; it has no writable input port.
+
+## Definition lifecycle
+
+### `gh_list_documents`
+
+No arguments. Returns open Grasshopper documents with `document_id`, name, path, and modified state, plus MCP session summaries. Listing does not attach a session.
+
+### `gh_open_document`
+
+| Argument | Required | Type / behavior |
+| --- | --- | --- |
+| `mode` | Yes | `create`, `open`, or `attach`. |
+| `request_id` | Yes | Shared mutation identifier. |
+| `path` | For `open` | String path to a `.gh` or `.ghx` definition on the Rhino computer. Use an absolute path. |
+| `document_id` | For `attach` | String ID returned by `gh_list_documents`. |
+| `name` | No | String session label. |
+
+```json
+{"mode":"create","name":"Array study","request_id":"array-open-01"}
+```
+
+Returns a session summary including `session_id`, `document_id`, `owned`, `revision`, `rhino_document`, current `result_id`, and modified/faulted flags. At most **32 sessions** can be open.
+
+Created/opened definitions are registered separately and left disabled until an explicit supported solve. To target a definition already open in Grasshopper, list and explicitly attach it; opening its file again returns `already_open`. Keep the session's bound Rhino document active for graph and geometry operations.
+
+### `gh_save_document`
+
+Requires `session_id`, `expected_revision`, `request_id`, and `path` string ending in `.gh` or `.ghx`. Optional `overwrite` boolean defaults to `false`. Existing destinations require `overwrite: true`.
+
+Returns the session summary and path. Saving the definition does not save its referenced Rhino model.
+
+### `gh_close_document`
+
+Requires `session_id`, `expected_revision`, and `request_id`. Optional `discard` boolean defaults to `false`.
+
+An owned modified definition must be saved or explicitly discarded. Closing an attached session detaches MCP and leaves the user's definition open. Returns `session_id`, `closed`, and `detached`.
+
+## Inspection and graph editing
+
+### `gh_inspect_document`
+
+Requires `session_id`; accepts shared `offset` and `limit`. Returns `session`, `total`, `offset`, and a node page. Each node includes placed/type IDs, name/nickname, position, enabled/preview state, support status, settings, input/output descriptions, and diagnostics. Page against `total`; this tool does not return `next_offset`.
+
+### `gh_apply_patch`
+
+Requires `session_id`, `expected_revision`, `request_id`, and `operations` array of **1–100 operations**. Optional `solve` boolean defaults to `false`.
+
+The patch is validated before commit and is intended to create one Grasshopper undo step. A successful patch advances the revision once. New nodes without explicit positions are arranged automatically; existing node positions are preserved. Definitions are limited to **2,000 objects**. Cyclic graphs and definitions containing unsupported objects are rejected for editing/solving.
+
+Returns `session`, `patch.aliases` mapping temporary aliases to placed node GUIDs, and `job` when solving was requested. A requested solve is queued once after commit. A solve failure leaves the committed graph available for repair.
+
+### Patch operations
+
+The first column is the `op` value. Fields listed as optional leave the current value unchanged when omitted, except that newly added nodes receive a default position/name.
+
+| Operation | Required fields | Optional fields / constraints |
+| --- | --- | --- |
+| `add` | `alias` string, `component_id` type GUID | `name` string sets nickname; `position` is two numbers `[x,y]`. Alias must be unique in this patch and must not be a GUID. |
+| `remove` | `node` | Removes the placed node. |
+| `connect` | `source`, `target` | Each endpoint is an object with `node` and `port`. Source is an output; target is an input. |
+| `disconnect` | `source`, `target` | Same endpoint shape as `connect`. |
+| `set_value` | `node`, input `port`, `tree` | Assigns persistent input values. Disconnect existing input wires first. See the tree format below. |
+| `set_slider` | `node`, numeric `value` | Numeric `minimum`, `maximum`; boolean `integer`. Value must fit the bounds; integer sliders require whole-number values. |
+| `set_properties` | `node` | String `name`; two-number `position`; boolean `preview` and `enabled`, applied where supported by the node. |
+| `set_mapping` | `node`, input `port` | `mapping`: `none`, `flatten`, or `graft`; booleans `simplify`, `reverse`. |
+
+Use the returned alias map for later requests. Do not reuse a patch-local alias as a permanent node identity.
+
+### Persistent values and data trees
+
+A tree is an array of `{path, items}` branches. Paths are unique, nonempty arrays of nonnegative integers. Each assignment accepts at most **2,000 branches** and **10,000 total items**. Empty branches and null items are distinct:
+
+```json
+[
+  {"path":[0],"items":[1,2]},
+  {"path":[3,0],"items":[]},
+  {"path":[7],"items":[null,4]}
+]
+```
+
+Values must match the parameter type. Numbers must be finite; integer parameters use 32-bit integer values. Booleans and strings use ordinary JSON values. Point, vector, interval, and plane inputs use tagged objects:
+
+```json
+{
+  "type":"plane",
+  "origin":{"type":"point","value":[0,0,0]},
+  "x_axis":{"type":"vector","value":[1,0,0]},
+  "y_axis":{"type":"vector","value":[0,1,0]}
+}
+```
+
+Points and vectors require three numbers; intervals use `{"type":"interval","value":[0,1]}`. Plane axes must define a valid plane. Curve, surface, Brep, mesh, and supported geometry parameters accept `{"type":"rhino_ref","id":"<existing Rhino object GUID>"}`. Replace the placeholder with a real object ID from the bound document. Unsupported object types are rejected. These are live references; deletion or replacement can invalidate outputs.
+
+Flattening merges branch separation; grafting gives items separate branches; simplifying removes redundant shared path prefixes. Read `gh_help` topic `data-trees` before changing mappings.
+
+## Solving and jobs
+
+### `gh_solve`
+
+Requires `session_id`, `expected_revision`, and `request_id`. Optional integer `timeout_seconds` defaults to **60**, range **1–3,600**.
+
+Queues an incremental solve and returns job status immediately, including `job_id`. MCP solves run serially. A disabled global solver or an active solution can cause `solver_disabled_or_busy`; do not toggle the global solver as a workaround.
+
+### `gh_get_job`
+
+Requires `job_id` string. Returns `job_id`, `session_id`, `state`, `cancellation_requested`, `result`, and `error` without waiting for the Rhino UI thread.
+
+States: `queued`, `running`, `completed`, `cancelled`, `timed_out`, `failed`. Poll while queued/running. A completed result includes revision, current `result_id`, component diagnostics/timings, and output port types with branch/item counts. **Completed does not mean every component succeeded or produced valid geometry.** Check diagnostics and the outputs themselves.
+
+### `gh_cancel_job`
+
+Requires `job_id` string. Cancels queued work immediately or requests cooperative cancellation of running work. Returns job status.
+
+Running cancellation/timeouts may wait for a component to return. They do not release the execution slot early. Heavy solves can still block Rhino's UI. Canvas tools may return `busy` while a solve is pending; poll status instead of accumulating more canvas calls. The pending queue is bounded at **32**, and old terminal job statuses can expire.
+
+## Outputs and baking
+
+### `gh_read_output`
+
+Requires `session_id`, current `result_id`, placed `node`, and output `port`. Accepts shared `offset` and `limit`.
+
+Returns `branch_count`, `item_count`, `rows`, and `next_offset` alongside session/result IDs. Each data row has `path`, `item_index`, and `value`; an empty branch has `item_index: null` and `empty: true`. A null item has a numeric index and `value: null`. A page can split a branch; reassemble by path and index.
+
+Scalar values include their types and values. Complex geometry stays in Rhino and returns type, validity, bounds, and reference ID where applicable. String samples are limited to 2,000 characters with a `truncated` flag. No implicit flattening occurs when reading.
+
+### `gh_bake`
+
+| Argument | Required | Type / behavior |
+| --- | --- | --- |
+| `session_id`, `expected_revision`, `request_id` | Yes | Shared mutation fields. |
+| `result_id` | Yes | Current solution handle. |
+| `outputs` | Yes | Array of **1–100** objects with `node` and output `port`. Selects whole output ports, not individual tree rows. |
+| `layer` | No | Existing Rhino layer's full path; defaults to the current layer. Create a missing layer with `create_layer` first. |
+| `name` | No | Rhino object name; defaults to `Grasshopper snapshot`. |
+
+Bake requires **1–10,000 valid, bakeable geometry items**. Nulls are skipped; invalid or non-bakeable values reject the bake. The intended operation creates one Rhino undo record and returns `object_ids` with session/result IDs. Created objects have `mcp4:gh_session`, `mcp4:gh_result`, and `mcp4:gh_source` provenance tags.
+
+An exact retry returns the previous receipt and IDs. A new request creates a separate snapshot; previous baked geometry remains unchanged. Changing parameters does not automatically update baked objects.
+
+## Errors and recovery
+
+Tool errors return MCP `isError: true` with JSON text containing `code`, `message`, and `help_topic`. Call `gh_help` with that topic for recovery guidance. Failed jobs instead carry their error in job status.
+
+| Code / symptom | Next action |
+| --- | --- |
+| `grasshopper_unavailable` | Check the Rhino license, bundled Grasshopper 1, and plugin availability. Help remains available. |
+| `revision_conflict` | Inspect and reconcile the current graph, then submit the revised intent with its current revision and a new request ID. |
+| `request_conflict` | Use a new ID for changed arguments; preserve identical arguments for exact retries. |
+| `stale_result` | Solve the current revision and use its new result ID. |
+| `invalid_port`, `node_not_found` | Inspect/describe and use returned placed IDs and port tokens. |
+| `connected_input` | Change an upstream control or disconnect before setting persistent values. |
+| `unsupported_component` | Replace with supported native components; installed does not mean supported. |
+| `document_mismatch`, `document_closed` | Activate the bound document or reopen/explicitly attach the intended definition. |
+| `missing_reference` | Restore or explicitly replace the referenced Rhino object. |
+| `busy`, `solver_disabled_or_busy` | Poll/wait; check the global solver state before solving again. |
+| `file_exists`, `unsaved_changes` | Explicitly choose overwrite, save, or discard as appropriate. |
+| `session_faulted` | Stop edits, preserve recovery information, and reopen the definition. |
+
+## Related
+
+- [Grasshopper capabilities and limits](/grasshopper/overview)
+- [How to install and test the alpha](/grasshopper/install-alpha)
+- [Build your first parametric array](/grasshopper/first-definition)
+- [Released input schemas](https://github.com/isque03/mcp4rhino/blob/v0.6.0-alpha/src/MCP4Rhino.Logic/Grasshopper/Tools.json)

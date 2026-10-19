@@ -51,6 +51,12 @@ You will identify whether the problem is the Rhino server, the AI client bridge,
 
 `tools/list` returns a JSON tool array, and Status shows Running. Your assistant can call `get_document_info`.
 
+## Grasshopper alpha checks
+
+If you are testing Grasshopper, confirm `get_support_info` reports **0.6.0-alpha** after a full Rhino restart. Stable `0.5.3` does not include `gh_` tools. `gh_help` works without loading Grasshopper, while an uninitialized `gh_status` availability result alone does not prove plugin loading or solving succeeds.
+
+For `grasshopper_unavailable`, check `check_rhino_license`, view-only mode, and bundled Grasshopper 1. For graph errors, inspect the first failing component and use the error's `help_topic`; do not rebuild the entire definition by default. See [the alpha troubleshooting table](/grasshopper/install-alpha#troubleshooting) and [tool recovery reference](/grasshopper/tools#errors-and-recovery).
+
 ## Related
 
 - [Configuration reference](/reference/configuration)

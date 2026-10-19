@@ -1,0 +1,97 @@
+---
+title: "Grasshopper (alpha)"
+description: "Create editable parametric definitions with an AI assistant using experimental Grasshopper 1 support in MCP4Rhino 0.6.0-alpha."
+---
+
+When a design changes, its related geometry should change with it. A facade's panel spacing might depend on its overall width; an array's positions might depend on a count and a distance. Grasshopper stores those relationships in an editable **definition**, a graph of components and wires.
+
+MCP4Rhino's Grasshopper tools let your assistant build and edit that graph, solve it, inspect results, and explicitly bake geometry into Rhino.
+
+<Warning>
+  **Grasshopper support is in alpha, starting with MCP4Rhino 0.6.0-alpha.** It targets **Grasshopper 1 in Rhino 8**, initially Rhino 8.35 on Windows and macOS. Build, unit, schema, and packaging checks passed for the release. Licensed native graph, solve, undo, bake, and file-round-trip validation is still pending. Use disposable documents and report failures.
+</Warning>
+
+## What the alpha includes
+
+| Capability | What you can ask your assistant to do |
+| --- | --- |
+| Native definitions | Create a separate definition, open a `.gh`/`.ghx` file, or explicitly attach an existing definition. Keep components and wires editable in Grasshopper. |
+| Component discovery | Search installed component types, inspect their ports, and check whether they are supported before using them. |
+| Parameters and relationships | Add sliders and persistent values; connect components; edit names, layout, preview, and enabled state in batches. |
+| Solve and inspect | Request a solve, poll its job, inspect component errors/timings, and read output counts, tree paths, and geometry bounds. |
+| Rhino references | Use supported existing Rhino geometry as live inputs. Referenced object changes can invalidate results. |
+| Save and bake | Save the reusable definition or bake selected current output ports as separate Rhino geometry snapshots. |
+| Agent guidance | Use `gh_help` or the portable parametric-design skill to learn design reasoning, data trees, workflows, and repair strategies. |
+
+These are the intended alpha behaviors; native testing is still needed. [Install the alpha](/grasshopper/install-alpha) to try them.
+
+## Parameters preserve design intent
+
+A useful definition separates **independent parameters** from **derived values**. For a facade, building width and a target panel size could be independent. Panel count, actual spacing, and panel positions can then be derived from them.
+
+```text
+building width + target panel size
+                |
+                v
+          panel count
+                |
+                v
+       spacing and positions
+                |
+                v
+          facade geometry
+```
+
+Changing one control should preserve the relationships instead of leaving the assistant to reposition every object. Give controls meaningful names, units, and useful ranges. Verify dimensions and constraints after a change; an attractive preview alone does not show the design is correct.
+
+Ordinary Rhino tools are often enough for a one-off edit. A parametric definition is useful when you expect repeated changes or want to keep the geometry-generating recipe editable for another person or agent.
+
+## Components, wires, and trees
+
+A **component** performs an operation. Its input/output **ports** connect through wires. A slider supplies a changeable number; persistent values are stored inputs; computed values are outputs from a solution.
+
+Grasshopper can pass individual items, lists, or **data trees**, which are ordered lists grouped under explicit paths. For example, keeping curves for two lofts in different branches keeps their profile families separate. Flattening those branches may combine unrelated curves into one loft input. The assistant should inspect the branches before changing their organization.
+
+The alpha reads paths, empty branches, and null items explicitly. It does not flatten outputs when returning them to the assistant. Read `gh_help` with topic `data-trees` for worked examples.
+
+## Preview, saving, and baking are separate
+
+- **Preview** shows the current computed geometry in Rhino. It is tied to the live definition and solution.
+- **Save** writes the definition to `.gh` or `.ghx`. Save the referenced Rhino model separately if the definition uses its objects.
+- **Bake** creates ordinary Rhino objects from selected current output ports. A later parameter change does not update those objects. A new bake request creates another snapshot and preserves the previous one.
+
+This explicit snapshot workflow lets you compare variations without silently replacing an earlier result. Ask for a bake only when you want geometry committed to the Rhino document.
+
+## How an agent should work
+
+1. Confirm the installed alpha version, Rhino document, units, and Grasshopper availability.
+2. Identify independent parameters, derived relationships, and measurable outputs.
+3. Discover actual supported components and describe their ports.
+4. Build a small graph in one patch, solve once, then inspect errors, trees, bounds, and dimensions.
+5. Change one control and verify the relationships still hold. Save or bake when requested.
+
+Your assistant uses revision numbers to avoid overwriting manual edits and request IDs to make exact retries return the original result. Outputs are current-solution handles, so the assistant must solve again after edits before reading or baking them. These checks add a little coordination in exchange for keeping human and agent edits visible to each other.
+
+Solves run in Rhino's process. Job polling keeps the tool request short, but an expensive solve can still block Rhino's UI. Running cancellation and timeouts are cooperative and may wait for a component to return.
+
+## Supported scope and limits
+
+The alpha supports a selected set of native parameters, sliders, arithmetic, Series/Range, list item/dispatch, domains, points/vectors, basic curves, Move/Rotate/Scale, extrusion, loft, and area/volume measurement. Discovery's `supported` flag is the authority for an installed type. See the [released component list](https://github.com/isque03/mcp4rhino/blob/v0.6.0-alpha/src/MCP4Rhino.Logic/Grasshopper/NativeComponents.json).
+
+Third-party plugins can appear in discovery, but their execution is not supported. Script authoring, clusters, timers, external-side-effect components, bulk parameter sweeps, optimization, automatic bake synchronization, Grasshopper 2, and cloud Compute execution are outside this alpha. Definitions containing unsupported objects cannot be edited or solved through these tools.
+
+You need usable Rhino licensing to exercise native plugins. Grasshopper 1 is bundled with Rhino 8; installing Grasshopper 2 is not a prerequisite. `gh_help` remains available without loading Grasshopper, and ordinary Rhino tools do not depend on the Grasshopper adapter loading.
+
+## Start here
+
+<CardGroup cols={2}>
+  <Card title="Install and test the alpha" icon="flask" href="/grasshopper/install-alpha">
+    Opt in, verify the version, test, and roll back to stable.
+  </Card>
+  <Card title="Build a parametric array" icon="shapes" href="/grasshopper/first-definition">
+    Create an editable five-circle study and change its count.
+  </Card>
+  <Card title="Grasshopper tool reference" icon="wrench" href="/grasshopper/tools">
+    Arguments, limits, graph operations, outputs, and recovery.
+  </Card>
+</CardGroup>
